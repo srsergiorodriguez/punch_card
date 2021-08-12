@@ -5,15 +5,30 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Punch Card Reader</title>
     <style>
-      #canvas-grid {
+      #general {
+        max-width: 375px;
+        border:solid 1px black;
         margin: auto;
+      }
+
+      #canvas-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        border:solid 1px;
+        grid-template-rows: 1fr 1fr;
       }
 
       .message {
-        font-size: 36px;
+        font-size: 32px;
+      }
+
+      button {
+        width: 100%;
+        height: 40px;
+        background: white;
+        cursor: pointer;
+      }
+
+      button:active {
+        background: gray;
       }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/p5.js"></script>
@@ -21,12 +36,15 @@
     <script src="sketch.js"></script>
   </head>
   <body>
-    <div id=canvas-grid>
-      <div id=canvas-container-2>
-        <canvas id=canvas2></canvas>
+    <div id=general>
+      <div id=message-container></div>
+      <div id=canvas-grid>
+        <div id=canvas-container-2>
+          <canvas id=canvas2></canvas>
+        </div>
+        <div id=canvas-container-1></div>
       </div>
-      <div id=canvas-container-1></div>
+      <div id="code-table-container"></div>
     </div>
-    <div id=message-container></div>
   </body>
 </html>

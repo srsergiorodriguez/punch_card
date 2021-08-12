@@ -1,13 +1,14 @@
 let capture;
-const cW = 720 * 0.7;
-const cH = 480 * 0.7;
-const ysq = 11;
-const xsq = 17;
 const bitLength = 5;
-const xunit = cW / xsq;
-const yunit = cH / ysq;
+const codeLength = 12;
+const ysq = (bitLength * 2) + 1;
+const xsq = (codeLength * 2) + 1;
+const xunit = 15;
+const yunit = 15;
+const cW = xsq * xunit;
+const cH = ysq * yunit;
 const code = [];
-const charList = [" ","a","b","c","d","e","f","g","h","i","j","k","l","m","n","ñ","o","p","q","r","s","t","u","v","w","x","y","z","!"];
+const charList = [" ","a","b","c","d","e","f","g","h","i","j","k","l","m","n","ñ","o","p","q","r","s","t","u","v","w","x","y","z","!","¡"];
 
 let vertices;
 let captureBtn;
@@ -16,17 +17,26 @@ let g;
 
 const holeThresh = 220;
 
+const captureOptions= {
+  audio: false,
+  video: {
+    optional: [{
+      facingMode: {exact: "environment"}}
+    ]
+  }
+};
+
 function setup() {
   createCanvas(cW, cH).id("canvas").parent("canvas-container-1");
   background(0);
   frameRate(4);
 
-  capture = createCapture(VIDEO).hide();
+  capture = createCapture(captureOptions).hide();
 
-  msg = createP("Decodificado: ").class("message").parent("message-container");
+  msg = createP("-> ").class("message").parent("message-container");
   g = createGraphics(cW, cH).id("graphic");
 
-  captureBtn = createButton("LEER TARJETA").mouseClicked(scanCard);
+  captureBtn = createButton("LEER TARJETA").parent("message-container").mouseClicked(scanCard);
 
   charSheet();
 }
@@ -69,9 +79,12 @@ function readBorder() {
     g.endShape(CLOSE);
   }
 
-  cv.imshow('canvas2', cv.imread('graphic')); // SHOW CAMERA IMAGE
+  const resized = new cv.Mat();
+  const dsize = new cv.Size(cW, cH);
+  cv.resize(cv.imread('graphic'), resized, dsize, 0, 0, cv.INTER_AREA);
+  cv.imshow('canvas2', resized); // SHOW CAMERA IMAGE
 
-  src.delete(); contours.delete(); hierarchy.delete();
+  src.delete(); contours.delete(); hierarchy.delete(); resized.delete();
 }
 
 function scanCard() {
@@ -145,17 +158,14 @@ function scanCard() {
 
   const code = getCode(signal);
   const decoded = decode(code);
-  msg.html("Decodificado: " + decoded);
+  msg.html("-> " + decoded);
 }
 
 function decode(code) {
   let message = "";
-  console.log(code);
   for (let line of code) {
     const binary = line.reduce((a,c)=>a+c, "");
-    console.log(binary);
     const decimal = parseInt(binary, 2);
-    console.log(decimal);
     if (decimal < charList.length) {
       message += charList[decimal];
     } else {
@@ -167,11 +177,12 @@ function decode(code) {
 
 function charSheet() {
   const sheet = [];
+  createP(`TABLA DE CÓDIGOS\n`).parent("code-table-container");
+  createP(`# --- binario --- caracter`).parent("code-table-container");
   for (let i = 0; i < charList.length; i++) {
-    console.log(i.toString(2));
     sheet[i] = [i, i.toString(2).padStart(bitLength, "0"), charList[i]];
+    createP(`${i} --- ${i.toString(2).padStart(bitLength, "0")} --- ${charList[i]}`).parent("code-table-container");
   }
-  console.table(sheet);
 }
 
 function argMax(array) {
