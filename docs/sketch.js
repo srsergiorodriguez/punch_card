@@ -20,9 +20,7 @@ const holeThresh = 220;
 const captureOptions= {
   audio: false,
   video: {
-    optional: [{
-      facingMode: {exact: "environment"}}
-    ]
+    facingMode: "environment"
   }
 };
 
