@@ -15,12 +15,12 @@ let captureBtn;
 let msg;
 
 function setup() {
-  cnv = createCanvas(cW, cH).id("canvas").parent("canvas-container");
+  cnv = createCanvas(cW, cH).id("canvas").parent("#canvas-container");
   background(255);
   cursor(HAND);
   frameRate(12);
 
-  msg = createP("-> ").class("message").parent("message-container");
+  msg = createP("-> ").class("message").parent("#message-container");
 
   charSheet();
 
